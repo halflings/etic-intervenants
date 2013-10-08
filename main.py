@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template
-from business import User
+from user import User
+from etude import Etude
 
 app = Flask(__name__)
 

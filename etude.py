@@ -22,10 +22,19 @@ class Etude(object):
         self.description = description
 
     @staticmethod
+    def by_domaine(domaine):
+        etudes = list()
+        etudes_result = db_etudes.find({'domaine' : domaine})
+        for etude in etudes_result:
+            params = [etude[param] for param in ['numero', 'titre', 'domaine', 'statut', 'description']]
+            etudes.append(Etude(*params))
+        return etudes
+
+    @staticmethod
     def fromxml(node):
         attributs = list()
         for attr in ['numero', 'titre', 'domaine', 'statut', 'description']:
-            attributs.append(node.xpath('@' + attr)[0])
+            attributs.append(node.xpath('@' + attr)[0].encode('utf-8'))
         return Etude(*attributs)
 
     @staticmethod
@@ -47,9 +56,23 @@ class Etude(object):
             # On insert l'objet Etude dans la BdD
             db_etudes.insert(etude.__dict__)
 
+    def __str__(self):
+        """ String representation, mostly for debugging """
+        res = str()
+        res += "Étude n°{}:\n".format(self.numero)
+        res += "  - Domaine: '{}'\n".format(self.domaine)
+        res += "  - Titre: '{}'\n".format(self.titre.encode('utf-8'))
+        res += "  - Statut: '{}'\n".format(self.statut)
+        if self.description:
+            res += "  - Description: '{}'\n".format(self.description)
+        return res
 if __name__ == '__main__':
-    # Mise à jour des études
-    Etude.update_db()
+    # # Mise à jour des études depuis le fichier XML
+    # Etude.update_db()
 
-    # Affichage des études
-    etudes = db_etudes.find()
+    # # Affichage des études
+    # etudes = list(db_etudes.find())
+
+    for etude in Etude.by_domaine('Informatique'):
+        print etude
+        print '-'*60
