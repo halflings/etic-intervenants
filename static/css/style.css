@@ -1,0 +1,57 @@
+
+
+/* Navigation */
+
+.logo-etic {
+    background: url(../img/logoetic.png) 5px 5px no-repeat;
+    text-indent: 35px;
+}
+.user-icon img{
+    width: 45px;
+    margin: 3px 10px;
+}
+
+.user-name a{
+    border: none !important;
+}
+
+/* Liste des offres */
+.todo-search{
+    padding: 5px 0 5px 25px;
+}
+
+.recherche-offre{
+    background: #FFF;
+    border: 1px solid #CCC;
+}
+
+.liste-offres{
+}
+
+
+.liste-offres .todo-content {
+    color: #A3FFED;
+}
+
+.liste-offres .todo-name, .liste-offres .todo-icon {
+    color: #ECF0F1;
+}
+
+
+.liste-offres li.todo-done .todo-name{
+    color: #ECF0F1;
+}
+
+.liste-offres li{
+    color: #ECF0F1;
+    margin: 0;
+}
+
+.liste-offres li:nth-child(odd){
+    background: #15B193;
+}
+
+.liste-offres li:nth-child(even){
+    background: #0B977C;
+}
+
