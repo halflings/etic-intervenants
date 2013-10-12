@@ -71,7 +71,7 @@ class Etude(object):
         """ Résumé d'une étude. Seulement pour faire du debugging. """
         res = str()
         res += "Étude n°{}:\n".format(self.numero)
-        res += "  - Domaine: '{}'\n".format(self.domaine)
+        res += "  - Domaine: '{}'\n".format(self.domaine.encode('utf-8'))
         res += "  - Titre: '{}'\n".format(self.titre.encode('utf-8'))
         res += "  - Statut: '{}'".format(self.statut)
         if self.description:
@@ -79,12 +79,12 @@ class Etude(object):
         return res
 
 if __name__ == '__main__':
-    # # Mise à jour des études depuis le fichier XML
+    # Mise à jour des études depuis le fichier XML
     # Etude.update_db()
 
-    # # Affichage des études
-    # etudes = list(db_etudes.find())
+    # Affichage des études
+    etudes = list(db_etudes.find())
 
-    for etude in Etude.by_domaine('Informatique'):
+    for etude in Etude.all():
         print etude
         print '-'*60

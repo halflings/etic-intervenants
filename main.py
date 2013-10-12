@@ -5,6 +5,8 @@ from flask import Flask, render_template
 from user import User
 from etude import Etude
 
+from flask import Flask
+
 app = Flask(__name__)
 
 @app.route("/")
