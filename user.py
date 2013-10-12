@@ -24,7 +24,7 @@ db_etudes = db.etudes
 
 class User(object):
 
-    def __init__(self, nom, password, email, departement, etudes=[], departements=[]):
+    def __init__(self, nom, password, email, departement, active=False, etudes=[], departements=[]):
         self.nom = nom
         self.password = password
 
@@ -42,6 +42,8 @@ class User(object):
         # Les études et départements suivis par l'utilisateur:
         self.etudes = etudes
         self.departements = departements
+
+        self.active = active
 
     def subscribe_etude(self, num_etude):
         etude = list(db_etudes.find({'numero' : num_etude}))
@@ -67,13 +69,13 @@ class User(object):
             self.merge()
 
     @staticmethod
+    def from_json(user_json):
+        return User(*[user_json[attr] for attr in ['nom', 'password', 'email', 'departement', 'etudes', 'departements']])
+
+    @staticmethod
     def by_email(email):
         user = list(users_db.find({'email' : email}))
-        if user:
-            attributes = [user[0][attr] for attr in ['nom', 'password', 'email', 'departement', 'etudes', 'departements']]
-            return User(*attributes)
-        else:
-            return None
+        return User.from_json(user[0]) if user else None
 
     def merge(self):
         """ Met à jour la BdD avec les données actuelles de l'objet """
@@ -101,38 +103,36 @@ class User(object):
 if __name__ == '__main__':
     
     # Tests unitaires de la classe User et de sa base de données
-
-    print "Création d'un object User avec..."
-    print "nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF'"
+    print ''
+    print ". Création d'un object User",
+    print "(nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF')"
     u = User(nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF')
-    print "... et synchronisation de l'objet avec la base de données"
+    print ". Synchronisation de l'objet avec la base de données"
     u.merge()
 
-    print ""
-    print "Dans la BdD:"
+    print "->",
     print User.by_email('test@insa-lyon.fr').__dict__
 
     print '-' *80
-    print "Changement du nom de l'utilisateur de 'Ahmed Kachkach' à 'Dwight Schrute'"
+    print ''
+    print ". Changement du nom de l'utilisateur de 'Ahmed Kachkach' à 'Dwight Schrute'"
     u.nom = 'Dwight Shrute'
     u.merge()
 
-
-    print ""
-    print "Dans la BdD:"
+    print "->",
     print User.by_email('test@insa-lyon.fr').__dict__
 
-
     print '-' *80
-    print "Abonnement de l'utilisateur à toutes les offres GI"
+    print ''
+    print ". Abonnement de l'utilisateur à toutes les offres GI"
     u.subscribe_departement('GI')
     u.merge()
 
-    print ""
-    print "Dans la BdD:"
+    print "->",
     print User.by_email('test@insa-lyon.fr').__dict__
 
-
     print '-'*80
+    print ''
     print "Fin des tests et suppression de l'utilisateur de test"
     u.remove()
+    print ''
