@@ -1,17 +1,10 @@
-detectui
-========
+## Etic intervenants
 
-Detectify API interface
+### Requirements
 
+* Python 2.7
+  with the modules:
+    - flask
+    - pymongo
 
-REQUIREMENTS : 
-  - Flask
-  - Requests
-
-In order to install those packages you will need to install pip.
-Once python is installed just run the flollowing command :
-  - easy-install pip 
-  
-Then to install packages run :
-  - pip install requests
-  - pip install flask
+* MongoDB
