@@ -1,3 +1,24 @@
+/* Filtre les éléments recherchés par titre */
+$('#recherche-offre > input').on('keyup', function() {
+  var value = $(this)[0].value.toLowerCase().replace(' ', '');
+  
+  console.log(value);
+  if (value.length == 0) {
+    $("#liste-offres li").show();
+    return; 
+  }
+
+  $("#liste-offres li").each(function() {
+    if ($(this).text().toLowerCase().search(value) > -1) {
+        $(this).show();
+    }
+    else {
+        $(this).hide();
+    }
+  });
+
+});
+
 // Some general UI pack related JS
 // Extend JS String with repeat method
 String.prototype.repeat = function(num) {

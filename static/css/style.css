@@ -16,42 +16,36 @@
 }
 
 /* Liste des offres */
-.todo-search{
-    padding: 5px 0 5px 25px;
-}
 
-.recherche-offre{
+#recherche-offre{
     background: #FFF;
     border: 1px solid #CCC;
 }
 
-.liste-offres{
-}
-
-
-.liste-offres .todo-content {
+#liste-offres .content {
     color: #A3FFED;
 }
 
-.liste-offres .todo-name, .liste-offres .todo-icon {
+#liste-offres .name, #liste-offres .icon {
     color: #ECF0F1;
 }
 
 
-.liste-offres li.todo-done .todo-name{
+#liste-offres li.done .name{
     color: #ECF0F1;
 }
 
-.liste-offres li{
+#liste-offres li{
     color: #ECF0F1;
     margin: 0;
+    padding: 20px;
 }
 
-.liste-offres li:nth-child(odd){
+#liste-offres li:nth-child(odd){
     background: #15B193;
 }
 
-.liste-offres li:nth-child(even){
+#liste-offres li:nth-child(even){
     background: #0B977C;
 }
 

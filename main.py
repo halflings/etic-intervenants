@@ -11,14 +11,19 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    etudes = Etude.all()
+    print etudes
+
+    return render_template('index.html', etudes=etudes, user=None)
 
 @app.route("/<username>")
 def userprofile(username):
     cur_user = User("ahmed.kachkach@gmail.com", "password")
     cur_user.name = username
+    etudes = Etude.all()
+    print etudes
 
-    return render_template('index.html', user=cur_user)
+    return render_template('index.html', etudes=etudes, user=cur_user)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

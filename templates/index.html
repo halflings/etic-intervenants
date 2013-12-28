@@ -187,60 +187,26 @@
             S'abonner aux offres de <strong>'Génie Informatique'</strong>
         </label>
 
-        <div class="todo mrm liste-offres">
+        <div id="offres">
 
-            <div class="todo-search recherche-offre">
-              <input class="todo-search-field" type="search" value="" placeholder="Filtrer par titre">
+            <div id="recherche-offre">
+              <input class="search-field" type="search" value="" placeholder="Filtrer par titre">
             </div>
 
-            <ul>
+            <ul id="liste-offres">
+              {% for etude in etudes %}
               <li>
-                <div class="todo-icon fui-gear"></div>
-                <div class="todo-content">
-                  <h4 class="todo-name">
-                    Offre n°1 : Développement de blah blah pour <strong>SuperSSII2.0</strong>
+                <div class="icon fui-gear"></div>
+                <div class="content">
+                  <h4 class="name">
+                    Offre n°{{etude.numero}} : {{etude.titre}}
                   </h4>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  {{etude.description}}
                 </div>
               </li>
-
-              <li>
-                <div class="todo-icon fui-volume"></div>
-                <div class="todo-content">
-                  <h4 class="todo-name">
-                    Offre n°2 : Développement d'une super-brouette pour <strong>MaçonExpress3.0</strong>
-                  </h4>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </div>
-              </li>
-
-              <li>
-                <div class="todo-icon fui-search"></div>
-                <div class="todo-content">
-                  <h4 class="todo-name">
-                    Offre n°3 : Développement d'un virus pour <strong>PesteNoire &amp; Fils</strong>
-                  </h4>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                  proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </div>
-              </li>
-
-
+              {% endfor %}
             </ul>
+
         </div>
 
         <h2>Exemple de formulaire d'inscription</h2>
