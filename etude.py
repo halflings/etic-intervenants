@@ -7,8 +7,6 @@ import mongoengine
 
 import config
 
-# URL du fichier XML où se trouvent les études proposées par ETIC
-
 # Initialisation de la BdDs
 db = mongoengine.connect(config.db_name)
 
@@ -33,8 +31,7 @@ def fetch_etudes(xml_url=config.etudes_xml_url):
 
 
 class Etude(mongoengine.Document):
-
-    numero = mongoengine.fields.IntField(required=True)
+    numero = mongoengine.fields.IntField(required=True, unique=True)
     titre = mongoengine.fields.StringField(required=True)
     domaine = mongoengine.fields.StringField(required=True)
     description = mongoengine.fields.StringField()

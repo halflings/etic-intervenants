@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pymongo
+import mongoengine
+import config
+
+from etude import Etude
 
 DEPARTEMENTS = {'IF' : 'Informatique',
                 'TC' : 'Telecommunications, Services et Usages',
@@ -16,123 +19,101 @@ DEPARTEMENTS = {'IF' : 'Informatique',
                 'BIM' : 'BioInformatique et Modélisation',
                 'BB' : 'Biochimie et Biotechnologies'}
 
-
 # Initialisation de la BdD
-db = pymongo.MongoClient().etic
-users_db = db.users
-db_etudes = db.etudes
+db = mongoengine.connect(config.db_name)
 
-class User(object):
+class User(mongoengine.Document):
 
-    def __init__(self, nom, password, email, departement, active=False, etudes=[], departements=[]):
-        self.nom = nom
-        self.password = password
+    email = mongoengine.fields.StringField(required=True, unique=True)
+    password = mongoengine.fields.StringField(required=True)
+    nom = mongoengine.fields.StringField(required=True)
+    departement = mongoengine.fields.StringField(required=True)
+
+    actif = mongoengine.fields.BooleanField(default=False)
+
+    etudes = mongoengine.fields.ListField(mongoengine.fields.ReferenceField(Etude))
+    abonnements = mongoengine.fields.ListField(mongoengine.fields.StringField())
+
+    def save(self, *args, **kwargs):
+        """ Surcharge de la méthode save pour valider les données """
 
         # Vérification de l'email
-        if not email.endswith('@insa-lyon.fr'):
-            raise ValueError("Impossible de créer un utilisateur avec un email non-INSA : {}".format(email))
-        self.email = email
+        if not self.email.endswith('@insa-lyon.fr'):
+            raise ValueError("Impossible de créer un utilisateur avec un email non-INSA : {}".format(self.email))
 
         # Vérification du département
-        if not departement in DEPARTEMENTS.keys():
-            raise ValueError("Département introuvable dans la base de données : {}".format(departement))
-        
-        self.departement = departement
+        if not self.departement in DEPARTEMENTS:
+            raise ValueError("Département introuvable dans la base de données : {}".format(self.departement))
 
-        # Les études et départements suivis par l'utilisateur:
-        self.etudes = etudes
-        self.departements = departements
-
-        self.active = active
+        # Appel à la méthode save de la classe mère
+        super(User, self).save(*args, **kwargs)
 
     def subscribe_etude(self, num_etude):
-        etude = list(db_etudes.find({'numero' : num_etude}))
+        etude = Etude.objects.get(numero=num_etude)
         # S'il existe une étude avec ce numéro, on la rajoute à la liste d'études suivies
-        if etude:
-            self.etudes.append(num_etude)
-            self.merge()
+        if etude is None:
+            raise ValueError("Aucune étude ne porte le numéro '{}'".format(num_etude))
+
+        self.etudes.append(etude)
+        self.save()
 
     def unsubscribe_etude(self, num_etude):
-        if num_etude in self.etudes:
-            self.etudes.remove(num_etude)
-            self.merge()
+        etude = Etude.objects.get(numero=num_etude)
+        # S'il existe une étude avec ce numéro, on la rajoute à la liste d'études suivies
+        if etude is None:
+            raise ValueError("Aucune étude ne porte le numéro '{}'".format(num_etude))
+
+        if not etude in self.etudes:
+            raise ValueError("Cette étude n'est pas suivie par l'utilisateur")
+
+        self.etudes.remove(etude)
+        self.save()
 
 
     def subscribe_departement(self, departement):
-        if departement in DEPARTEMENTS.keys():
-            self.departements.append(departement)
-            self.merge()
+        if not departement in DEPARTEMENTS:
+            raise ValueError("Département inconnu: '{}'".format(departement))
+
+        self.abonnements.append(departement)
+        self.save()
 
     def unsubscribe_departement(self, departement):
-        if unsubscribe_departement in self.departements:
-            self.etudes.remove(departement)
-            self.merge()
+        if not departement in self.abonnements:
+            raise ValueError("Impossible de se désabonner d'un département auquel l'utilisateur n'est pas abonné: '{}'".format(departement))
 
-    @staticmethod
-    def from_json(user_json):
-        return User(*[user_json[attr] for attr in ['nom', 'password', 'email', 'departement', 'etudes', 'departements']])
+        self.abonnements.remove(departement)
+        self.save()
 
-    @staticmethod
-    def by_email(email):
-        user = list(users_db.find({'email' : email}))
-        return User.from_json(user[0]) if user else None
-
-    def merge(self):
-        """ Met à jour la BdD avec les données actuelles de l'objet """
-        user_in_db = list(users_db.find({'email' : self.email}))
-
-        # Si l'utilisateur est déjà dans la base de données, on le met à jour
-        if user_in_db:
-            users_db.update(dict(_id=user_in_db[0]['_id']), self.__dict__)
-        # S'il n y est pas, on le crée
-        else:
-            users_db.insert(self.__dict__)
-
-    def update(self):
-        """ Met à jour les données de l'objet avec celles présentes dans la BdD """
-        user_in_db = list(users_db.find({'email' : self.email}))
-        if not user_in_db:
-            raise ValueError("Tentative de mise à jour d'un objet User qui n'existe pas dans la base de données")
-        
-        self.__dict__ = user_in_db[0]
-
-    def remove(self):
-        """ Suppression de l'utilisateur """
-        users_db.remove({'email' : self.email})
+    def __str__(self):
+        return "Utilisateur {}. email = {}".format(self.nom, self.email)
 
 if __name__ == '__main__':
-    
+
+    db = mongoengine.connect(config.test_db)
+    User.drop_collection()
+
     # Tests unitaires de la classe User et de sa base de données
-    print ''
-    print ". Création d'un object User",
-    print "(nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF')"
+    print ". Création d'un object User"
     u = User(nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF')
-    print ". Synchronisation de l'objet avec la base de données"
-    u.merge()
+    u.save()
 
-    print "->",
-    print User.by_email('test@insa-lyon.fr').__dict__
+    assert User.objects.get(email='test@insa-lyon.fr').nom == 'Ahmed Kachkach'
 
-    print '-' *80
-    print ''
+
     print ". Changement du nom de l'utilisateur de 'Ahmed Kachkach' à 'Dwight Schrute'"
     u.nom = 'Dwight Shrute'
-    u.merge()
+    u.save()
 
-    print "->",
-    print User.by_email('test@insa-lyon.fr').__dict__
+    assert User.objects.get(email='test@insa-lyon.fr').nom == 'Dwight Shrute'
 
-    print '-' *80
-    print ''
+
     print ". Abonnement de l'utilisateur à toutes les offres GI"
     u.subscribe_departement('GI')
-    u.merge()
+    u.save()
 
-    print "->",
-    print User.by_email('test@insa-lyon.fr').__dict__
+    assert 'GI' in User.objects.get(email='test@insa-lyon.fr').abonnements
 
-    print '-'*80
-    print ''
+
+    print '-' * 80
     print "Fin des tests et suppression de l'utilisateur de test"
-    u.remove()
-    print ''
+    u.delete()

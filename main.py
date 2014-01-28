@@ -16,10 +16,8 @@ def index():
 
 @app.route("/<username>")
 def userprofile(username):
-    cur_user = User("ahmed.kachkach@gmail.com", "password")
-    cur_user.name = username
+    cur_user = User("ahmed.kachkach@insa-lyon.fr", "password123", nom="Ahmed Kachkach")
     etudes = Etude.objects()
-    print etudes
 
     return render_template('index.html', etudes=etudes, user=cur_user)
 
