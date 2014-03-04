@@ -1,27 +1,8 @@
-/* Misc */
-var markdown = new Showdown.converter();
-
-var preprocessText = function(msg) {
-    return msg.replace(/(\r\n|\n|\r)/gm, '<br>').replace(/ /g, '&nbsp;');
-}
-
-
 /* Handlebars */
 loadTemplate = function(template_id) {
     var source = $(template_id).html();
     return Handlebars.compile(source);
 }
-
-Handlebars.registerHelper('breaklines', function(text) {
-    text = Handlebars.Utils.escapeExpression(text);
-    text = preprocessText(text);
-    return new Handlebars.SafeString(text);
-});
-
-Handlebars.registerHelper('fixedDecimal', function(number) {
-  return number.toFixed(4);
-});
-
 
 /* API related */
 var apiCall = function(path, method, data, callback) {
