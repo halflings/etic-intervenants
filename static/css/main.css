@@ -77,7 +77,7 @@ a:href {
   width: 100%;
   padding: 10px;
 
-  background: #32477E;
+  background: #254CC3;
   color: #FFF;
   text-shadow: -1px 1px 0px rgba(0, 0, 0, 0.5);
 }
@@ -87,12 +87,12 @@ a:href {
 }
 
 .header a:hover {
-  color: #B6C9FD;
+  opacity: 0.7;
   text-decoration: none;
 }
 
 .header .sitename {
-  font-size: 20px;
+  font-size: 18px;
   margin: 5px 10px;
   display: inline-block;
 }
@@ -109,9 +109,6 @@ a:href {
   font-size: 12px;
 }
 
-.right-link:hover .glyphicon {
-  color: #DA0C15;
-}
 
 .header .username {
   font-weight: bold;
