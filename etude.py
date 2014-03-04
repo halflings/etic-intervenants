@@ -14,7 +14,7 @@ def fetch_etudes(xml_url=config.etudes_xml_url):
     """ Met à jour la BdD des études """
 
     # On purge la base de donnée d'études
-    db.drop_database(config.db_name)
+    Etude.drop_collection()
 
     # On récupère le fichier XML contenant les études et on extrait ces dernières
     etudes_content = requests.get(xml_url, verify=False).content
@@ -31,34 +31,36 @@ def fetch_etudes(xml_url=config.etudes_xml_url):
 
 
 class Etude(mongoengine.Document):
-    numero = mongoengine.fields.IntField(required=True, unique=True)
-    titre = mongoengine.fields.StringField(required=True)
-    domaine = mongoengine.fields.StringField(required=True)
+    number = mongoengine.fields.IntField(required=True, primary_key=True)
+    title = mongoengine.fields.StringField(required=True)
+    domain = mongoengine.fields.StringField(required=True)
     description = mongoengine.fields.StringField()
-    statut = mongoengine.fields.IntField()
+    status = mongoengine.fields.IntField()
 
     # Méthodes pour importer une méthode soit depuis un noeud XML (fourni par le service doletic), soit depuis le format JSON (MongoDB)
+    attr_map = {'numero':'number', 'titre':'title', 'domaine':'domain', 'statut':'status'}
+
     @staticmethod
     def from_xml(node):
-        attributs = dict()
-        for attr in ['numero', 'titre', 'domaine', 'statut', 'description']:
-            attributs[attr] = node.xpath('@' + attr)[0].encode('utf-8')
-        return Etude(**attributs)
+        attributes = dict()
+        for xml_attr, attr in Etude.attr_map.iteritems():
+            attributes[attr] = node.xpath('@' + xml_attr)[0].encode('utf-8')
+        return Etude(**attributes)
 
     def __str__(self):
         """ Résumé d'une étude. Seulement pour faire du debugging. """
         res = str()
-        res += "Étude n°{}:\n".format(self.numero)
-        res += "  - Domaine: '{}'\n".format(self.domaine.encode('utf-8'))
-        res += "  - Titre: '{}'\n".format(self.titre.encode('utf-8'))
-        res += "  - Statut: '{}'".format(self.statut)
+        res += "Étude n°{}:\n".format(self.number)
+        res += "  - Domaine: '{}'\n".format(self.domain.encode('utf-8'))
+        res += "  - Titre: '{}'\n".format(self.title.encode('utf-8'))
+        res += "  - Statut: '{}'".format(self.status)
         if self.description:
             res += "\n  - Description: '{}'".format(self.description)
         return res
 
 if __name__ == '__main__':
     # Mise à jour des études depuis le fichier XML
-    fetch_etudes()
+    #fetch_etudes()
 
     # Affichage des études
     for etude in Etude.objects():

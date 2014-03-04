@@ -1,52 +1,74 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import hashlib
+
 import mongoengine
+
 import config
 
 from etude import Etude
 
-DEPARTEMENTS = {'IF' : 'Informatique',
-                'TC' : 'Telecommunications, Services et Usages',
-                'GI' : 'Génie Industriel',
-                'GE' : 'Génie Electrique',
-                'GEN' : 'Génie Energétique et Environnement',
-                'SGM' : 'Science et Génie des Matériaux',
-                'GCU' : 'Génie Civil et Urbanisme',
-                'GMD' : 'Génie Mécanique Developpement',
-                'GMC' : 'Génie Mécanique Conception',
-                'GMPP': 'Génie Mécanique Procédés Plasturgie',
-                'BIM' : 'BioInformatique et Modélisation',
-                'BB' : 'Biochimie et Biotechnologies'}
+DEPARTMENTS = { 'IF'  : u'Informatique',
+                'TC'  : u'Telecommunications, Services et Usages',
+                'GI'  : u'Génie Industriel',
+                'GE'  : u'Génie Electrique',
+                'GEN' : u'Génie Energétique et Environnement',
+                'SGM' : u'Science et Génie des Matériaux',
+                'GCU' : u'Génie Civil et Urbanisme',
+                'GMD' : u'Génie Mécanique Developpement',
+                'GMC' : u'Génie Mécanique Conception',
+                'GMPP': u'Génie Mécanique Procédés Plasturgie',
+                'BIM' : u'BioInformatique et Modélisation',
+                'BB'  : u'Biochimie et Biotechnologies'}
 
 # Initialisation de la BdD
 db = mongoengine.connect(config.db_name)
 
+def generate_salt():
+    return os.urandom(16).encode('base_64')
+
+def hash_password(password, salt):
+    return hashlib.sha512(salt + password).hexdigest()
+
 class User(mongoengine.Document):
 
-    email = mongoengine.fields.StringField(required=True, unique=True)
-    password = mongoengine.fields.StringField(required=True)
-    nom = mongoengine.fields.StringField(required=True)
-    departement = mongoengine.fields.StringField(required=True)
+    email = mongoengine.StringField(required=True, unique=True)
 
-    actif = mongoengine.fields.BooleanField(default=False)
+    secret_hash = mongoengine.StringField(required=True)
+    salt = mongoengine.StringField(required=True)
 
-    etudes = mongoengine.fields.ListField(mongoengine.fields.ReferenceField(Etude))
-    abonnements = mongoengine.fields.ListField(mongoengine.fields.StringField())
+    name = mongoengine.StringField(required=True)
+    department = mongoengine.StringField(required=True)
 
-    def save(self, *args, **kwargs):
-        """ Surcharge de la méthode save pour valider les données """
+    activated = mongoengine.BooleanField(default=False)
+
+    etudes = mongoengine.ListField(mongoengine.ReferenceField(Etude))
+    following = mongoengine.ListField(mongoengine.StringField())
+
+    @staticmethod
+    def new_user(email, password, name, department, activated=False):
+        user = User(email=email, name=name, department=department, activated=activated)
+
+        user.salt = generate_salt()
+        user.secret_hash = hash_password(password, user.salt)
+
+        return user
+
+    def valid_password(self, password):
+        return hash_password(password, self.salt) == self.secret_hash
+
+    def clean(self):
+        """ Validation des données """
 
         # Vérification de l'email
         if not self.email.endswith('@insa-lyon.fr'):
             raise ValueError("Impossible de créer un utilisateur avec un email non-INSA : {}".format(self.email))
 
         # Vérification du département
-        if not self.departement in DEPARTEMENTS:
-            raise ValueError("Département introuvable dans la base de données : {}".format(self.departement))
-
-        # Appel à la méthode save de la classe mère
-        super(User, self).save(*args, **kwargs)
+        if not self.department in DEPARTMENTS:
+            raise ValueError("Département introuvable dans la base de données : {}".format(self.department))
 
     def subscribe_etude(self, num_etude):
         etude = Etude.objects.get(numero=num_etude)
@@ -70,22 +92,22 @@ class User(mongoengine.Document):
         self.save()
 
 
-    def subscribe_departement(self, departement):
-        if not departement in DEPARTEMENTS:
-            raise ValueError("Département inconnu: '{}'".format(departement))
+    def subscribe_department(self, department):
+        if not department in DEPARTMENTS:
+            raise ValueError("Département inconnu: '{}'".format(department))
 
-        self.abonnements.append(departement)
+        self.following.append(department)
         self.save()
 
-    def unsubscribe_departement(self, departement):
-        if not departement in self.abonnements:
-            raise ValueError("Impossible de se désabonner d'un département auquel l'utilisateur n'est pas abonné: '{}'".format(departement))
+    def unsubscribe_department(self, department):
+        if not department in self.following:
+            raise ValueError("Impossible de se désabonner d'un département auquel l'utilisateur n'est pas abonné: '{}'".format(department))
 
-        self.abonnements.remove(departement)
+        self.following.remove(department)
         self.save()
 
     def __str__(self):
-        return "Utilisateur {}. email = {}".format(self.nom, self.email)
+        return "Utilisateur {}. email = {}".format(self.name, self.email)
 
 if __name__ == '__main__':
 
@@ -94,24 +116,24 @@ if __name__ == '__main__':
 
     # Tests unitaires de la classe User et de sa base de données
     print ". Création d'un object User"
-    u = User(nom='Ahmed Kachkach', password='mypassword', email='test@insa-lyon.fr', departement='IF')
+    u = User.new_user(email='test@insa-lyon.fr',name='Ahmed Kachkach', password='mypassword', department='IF')
     u.save()
 
-    assert User.objects.get(email='test@insa-lyon.fr').nom == 'Ahmed Kachkach'
+    assert User.objects.get(email='test@insa-lyon.fr').name == 'Ahmed Kachkach'
 
 
-    print ". Changement du nom de l'utilisateur de 'Ahmed Kachkach' à 'Dwight Schrute'"
-    u.nom = 'Dwight Shrute'
+    print ". Changement du name de l'utilisateur de 'Ahmed Kachkach' à 'Dwight Schrute'"
+    u.name = 'Dwight Shrute'
     u.save()
 
-    assert User.objects.get(email='test@insa-lyon.fr').nom == 'Dwight Shrute'
+    assert User.objects.get(email='test@insa-lyon.fr').name == 'Dwight Shrute'
 
 
     print ". Abonnement de l'utilisateur à toutes les offres GI"
-    u.subscribe_departement('GI')
+    u.subscribe_department('GI')
     u.save()
 
-    assert 'GI' in User.objects.get(email='test@insa-lyon.fr').abonnements
+    assert 'GI' in User.objects.get(email='test@insa-lyon.fr').following
 
 
     print '-' * 80
