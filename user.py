@@ -64,11 +64,11 @@ class User(mongoengine.Document):
 
         # Vérification de l'email
         if not self.email.endswith('@insa-lyon.fr'):
-            raise ValueError("Impossible de créer un utilisateur avec un email non-INSA : {}".format(self.email))
+            raise mongoengine.ValidationError(u"Impossible de créer un utilisateur avec un email non-INSA : {}".format(self.email))
 
         # Vérification du département
         if not self.department in DEPARTMENTS:
-            raise ValueError("Département introuvable dans la base de données : {}".format(self.department))
+            raise mongoengine.ValidationError(u"Département introuvable dans la base de données : {}".format(self.department))
 
     def subscribe_etude(self, num_etude):
         etude = Etude.objects.get(numero=num_etude)

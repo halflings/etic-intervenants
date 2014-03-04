@@ -18,7 +18,7 @@ app.secret_key = config.secret_key
 def inject_user():
     """ Injects a 'user' variable in templates' context when a user is logged-in """
     if session.get('logged_in', None):
-        return dict(user=User.objects.get(email=session['logged_in']))
+        return dict(user=User.objects(email=session['logged_in']).first())
     else:
         return dict(user=None)
 
@@ -59,11 +59,13 @@ def signup():
 @app.route('/signup', methods=['POST'])
 def process_signup():
     email, password, name, department = [request.form[attr] for attr in ['email', 'password', 'name', 'department']]
+    email = email.lower()
     user = User.new_user(email, password, name, department)
     try:
         user.save()
     except mongoengine.ValidationError as e:
-        return render_template('signup.html', departments=DEPARTMENTS, error=e.message)
+        failed_data = dict(email=email, name=name, department=department)
+        return render_template('signup.html', departments=DEPARTMENTS, error=e.message, **failed_data)
 
     session['logged_in'] = user.email
     return redirect('/')
