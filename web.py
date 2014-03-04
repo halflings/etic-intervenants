@@ -3,6 +3,7 @@
 
 from functools import wraps
 
+import mongoengine
 from flask import Flask, render_template, redirect, request, session, g
 
 from user import User, DEPARTMENTS
@@ -55,6 +56,17 @@ def logout():
 def signup():
     return render_template('signup.html', departments=DEPARTMENTS)
 
+@app.route('/signup', methods=['POST'])
+def process_signup():
+    email, password, name, department = [request.form[attr] for attr in ['email', 'password', 'name', 'department']]
+    user = User.new_user(email, password, name, department)
+    try:
+        user.save()
+    except mongoengine.ValidationError as e:
+        return render_template('signup.html', departments=DEPARTMENTS, error=e.message)
+
+    session['logged_in'] = user.email
+    return redirect('/')
 
 @app.route('/login', methods=['POST'])
 def process_login():

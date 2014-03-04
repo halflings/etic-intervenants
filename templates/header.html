@@ -1,6 +1,6 @@
 <div class="header">
     <a href="/">
-        <h1 class="sitename">ETIC intervenants</h1>
+        <h1 class="sitename">ETIC Intervenants</h1>
     </a>
 
     {% if user %}
@@ -9,7 +9,7 @@
         </span>
 
         <span class="username right-link">
-            {{user.name}}
+            {{user.name}} ({{user.department}})
         </span>
     {% else %}
         <span class="login right-link">
