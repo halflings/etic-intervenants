@@ -43,6 +43,13 @@ def index():
     etudes = Etude.objects()
     return render_template('index.html', etudes=etudes)
 
+@app.route("/etudes")
+@requires_login
+def etudes():
+    etudes = Etude.objects()
+    domains = set(etude.domain for etude in etudes)
+    return render_template('etudes.html', etudes=etudes, domains=domains)
+
 @app.route('/login')
 def login():
     return render_template('login.html')

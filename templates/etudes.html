@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block style %}
+<link href="/static/css/etudes.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+{% include "header.html" %}
+
+  <div class="col-md-3">
+
+    <h2>Filtres</h2>
+
+    <ul class="domains">
+      {% for domain in domains %}
+      <li data-domain="{{domain}}">
+        {{domain}}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="col-md-9">
+
+    <ul class="etudes list-group">
+    {% for etude in etudes %}
+      <a href="javascript:void(0)" class="etude list-group-item">
+        <h3 class="list-group-item-heading">{{etude.title}}</h3>
+
+        <div class="details">
+          <h4 class="domain">{{etude.domain}}</h4>
+            <p class="list-group-item-text">
+              {{etude.description|safe}}
+            </p>
+        </div>
+      </a>
+    {% endfor %}
+    </ul>
+
+  </div>
+{% endblock body %}
+
+
+{% block javascript %}
+<script src="/static/js/etudes.js"></script>
+{% endblock %}

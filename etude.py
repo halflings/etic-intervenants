@@ -38,7 +38,7 @@ class Etude(mongoengine.Document):
     status = mongoengine.fields.IntField()
 
     # Méthodes pour importer une méthode soit depuis un noeud XML (fourni par le service doletic), soit depuis le format JSON (MongoDB)
-    attr_map = {'numero':'number', 'titre':'title', 'domaine':'domain', 'statut':'status'}
+    attr_map = {'numero':'number', 'titre':'title', 'domaine':'domain', 'statut':'status', 'description':'description'}
 
     @staticmethod
     def from_xml(node):

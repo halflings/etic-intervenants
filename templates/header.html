@@ -1,22 +1,27 @@
 <div class="header">
     <a href="/">
-        <h1 class="sitename">ETIC Intervenants</h1>
+        <h1 class="sitename"><img height="100px" src="/static/img/logo-etic.png"></h1>
     </a>
 
     {% if user %}
-        <span class="logout right-link">
+        <span class="btn logout right-link">
             <a href="/logout"><span class="glyphicon glyphicon-remove"></span> Se déconnecter</a>
         </span>
 
-        <span class="username right-link">
+        <span class="btn login right-link">
+            <a href="/etudes"><span class="glyphicon glyphicon-briefcase"></span> Études</a>
+        </span>
+
+
+        <span class="btn username right-link">
             {{user.name}} ({{user.department}})
         </span>
     {% else %}
-        <span class="login right-link">
-            <a href="/login"><span class="glyphicon glyphicon-user"></span> Connection</a>
+        <span class="btn login right-link">
+            <a href="/login"><span class="glyphicon glyphicon-user"></span> Connexion</a>
         </span>
 
-        <span class="login right-link">
+        <span class="btn login right-link">
             <a href="/signup"><span class="glyphicon glyphicon-pencil"></span> Inscription</a>
         </span>
     {% endif %}

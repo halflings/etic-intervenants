@@ -74,10 +74,11 @@ a:href {
 
 /* Header */
 .header {
-  width: 100%;
+  width: 1024px;
+  margin: 0 auto;
+  min-height: 70px;
   padding: 10px;
 
-  background: #254CC3;
   color: #FFF;
   text-shadow: -1px 1px 0px rgba(0, 0, 0, 0.5);
 }
@@ -91,11 +92,19 @@ a:href {
   text-decoration: none;
 }
 
+.header .btn {
+  color: inherit;
+  background: #22b705;
+  margin: 40px 12px;
+  padding: 11px 21px;
+}
+
 .header .sitename {
   font-size: 18px;
-  margin: 5px 10px;
+  margin: 15px 90px;
   display: inline-block;
 }
+
 
 .right-link {
   font-size: 14px;
