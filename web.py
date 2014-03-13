@@ -85,6 +85,8 @@ def process_login():
         return render_template('login.html', error="Wrong password or username.", email=email)
     else:
         session['logged_in'] = user.email
+        inject_user()
+        load_user()
         return redirect('/')
 
 
