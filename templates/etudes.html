@@ -29,7 +29,7 @@
 
     <div class="etudes list-group">
     {% for etude in etudes %}
-      <a href="javascript:void(0)" class="etude list-group-item">
+      <a href="javascript:void(0)" class="etude list-group-item" data-etude-id="{{etude.number}}">
         <h3 class="list-group-item-heading">{{etude.title}}</h3>
 
         <div class="details">
@@ -37,6 +37,9 @@
             <p class="list-group-item-text">
               {{etude.description|safe}}
             </p>
+
+            <button type="button" class="btn btn-success btn-notify">Cette offre m'intéresse !</button>
+
         </div>
       </a>
     {% endfor %}

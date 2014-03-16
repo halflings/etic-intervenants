@@ -10,6 +10,12 @@ h2, h3 {
     display: none;
 }
 
+.btn-notify {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+}
+
 #recherche-etude {
     background: #333;
     box-shadow: none;

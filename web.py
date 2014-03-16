@@ -4,7 +4,7 @@
 from functools import wraps
 
 import mongoengine
-from flask import Flask, render_template, redirect, request, session, g
+from flask import Flask, render_template, redirect, request, session, g, jsonify
 
 from user import User, DEPARTMENTS
 from etude import Etude
@@ -88,6 +88,13 @@ def process_login():
         inject_user()
         load_user()
         return redirect('/')
+
+@app.route('/api/etude/<etude_id>/notify', methods=['POST'])
+def notify_etude(etude_id):
+    # TODO : implement this
+    etude = Etude.objects.get(number=etude_id)
+    app.logger.info('Received notification by user "{}" for etude: \n{}'.format(g.user.name, etude))
+    return jsonify(ok=True)
 
 
 if __name__ == "__main__":

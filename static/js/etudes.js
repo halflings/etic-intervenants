@@ -52,6 +52,21 @@ $(document).ready(function() {
         filterEtudes();
     });
 
+    // Subscribe
+    $('.btn-notify').click(function(e) {
+        var $this = $(this);
+        var etudeId = $this.closest('.etude').data('etude-id');
+        $this.attr('disabled', true);
+
+        // Notifying the server that the user is interested
+        apiCall('/api/etude/' + etudeId + '/notify', 'POST', {}, function(data) {
+            notification.success("Noté ! Nous vous contacterons dans les plus brefs délais.")
+        })
+
+        // Stop the propagation of the click event
+        e.stopPropagation();
+    })
+
     // Search input
     $('#recherche-etude').keyup(function() {
         filterEtudes();

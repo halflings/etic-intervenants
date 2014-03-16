@@ -1,3 +1,7 @@
+var preprocessText = function(msg) {
+    return msg.replace(/(\r\n|\n|\r)/gm, '<br>').replace(/ /g, '&nbsp;');
+}
+
 /* Handlebars */
 loadTemplate = function(template_id) {
     var source = $(template_id).html();
