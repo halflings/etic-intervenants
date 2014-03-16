@@ -60,7 +60,7 @@ class Etude(mongoengine.Document):
 
 if __name__ == '__main__':
     # Mise à jour des études depuis le fichier XML
-    #fetch_etudes()
+    fetch_etudes()
 
     # Affichage des études
     for etude in Etude.objects():
