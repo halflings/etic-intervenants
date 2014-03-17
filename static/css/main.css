@@ -127,3 +127,7 @@ a:href {
 .breadcrumb {
   margin: 0;
 }
+
+.carousel-inner>.item>img {
+  margin: 0 auto;
+}
