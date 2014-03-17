@@ -50,6 +50,13 @@ def etudes():
     domains = set(etude.domain for etude in etudes)
     return render_template('etudes.html', etudes=etudes, domains=domains)
 
+
+@app.route("/profile")
+@requires_login
+def profile():
+    return render_template('profile.html')
+
+
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -91,8 +98,12 @@ def process_login():
 
 @app.route('/api/etude/<etude_id>/notify', methods=['POST'])
 def notify_etude(etude_id):
-    # TODO : implement this
+    # TODO : implement sending a mail
     etude = Etude.objects.get(number=etude_id)
+
+    g.user.etudes.append(etude)
+    g.user.save()
+
     app.logger.info('Received notification by user "{}" for etude: \n{}'.format(g.user.name, etude))
     return jsonify(ok=True)
 
@@ -100,7 +111,7 @@ def notify_etude(etude_id):
 if __name__ == "__main__":
     # Creating dummy user
     User.drop_collection()
-    dummy_user = User.new_user(email='dummy@insa-lyon.fr', password='123456', name='John McDummy', department='IF')
+    dummy_user = User.new_user(email='dummy@insa-lyon.fr', password='123456', name='Richard Martin', department='IF')
     dummy_user.save()
 
     app.run(host='0.0.0.0', debug=True)

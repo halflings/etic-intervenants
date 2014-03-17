@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block style %}
+<link href="/static/css/etudes.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+{% include "header.html" %}
+
+
+<h2>Informations</h2>
+<ul class="etudes list-group">
+  <li class="list-group-item">
+    <strong>Name:</strong> {{user.name}}
+  </li>
+  <li class="list-group-item">
+    <strong>Email:</strong> {{user.email}}
+  </li>
+  <li class="list-group-item">
+    <strong>Département:</strong> {{user.department}}
+  </li>
+</ul>
+
+
+{% if user.etudes %}
+<h2>Intéressé par:</h2>
+<ul class="etudes list-group">
+  {% for etude in user.etudes %}
+  <li class="list-group-item">
+    <h3>{{etude.title}}</h3>
+    <h4>{{etude.domain}}</h4>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+
+{% endblock body %}
+
+
+{% block javascript %}
+<script src="/static/js/etudes.js"></script>
+{% endblock %}

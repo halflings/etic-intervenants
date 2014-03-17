@@ -38,8 +38,11 @@
               {{etude.description|safe}}
             </p>
 
+            {% if etude in user.etudes %}
+            <button type="button" class="btn btn-info btn-notify" disabled>Déjà abonné à cette offre</button>
+            {% else %}
             <button type="button" class="btn btn-success btn-notify">Cette offre m'intéresse !</button>
-
+            {% endif %}
         </div>
       </a>
     {% endfor %}

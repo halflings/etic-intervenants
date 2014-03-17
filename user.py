@@ -70,24 +70,13 @@ class User(mongoengine.Document):
         if not self.department in DEPARTMENTS:
             raise mongoengine.ValidationError(u"Département introuvable dans la base de données : {}".format(self.department))
 
-    def subscribe_etude(self, num_etude):
-        etude = Etude.objects.get(numero=num_etude)
-        # S'il existe une étude avec ce numéro, on la rajoute à la liste d'études suivies
-        if etude is None:
-            raise ValueError("Aucune étude ne porte le numéro '{}'".format(num_etude))
-
+    def subscribe_etude(self, etude):
         self.etudes.append(etude)
         self.save()
 
-    def unsubscribe_etude(self, num_etude):
-        etude = Etude.objects.get(numero=num_etude)
-        # S'il existe une étude avec ce numéro, on la rajoute à la liste d'études suivies
-        if etude is None:
-            raise ValueError("Aucune étude ne porte le numéro '{}'".format(num_etude))
-
+    def unsubscribe_etude(self, etude):
         if not etude in self.etudes:
             raise ValueError("Cette étude n'est pas suivie par l'utilisateur")
-
         self.etudes.remove(etude)
         self.save()
 
