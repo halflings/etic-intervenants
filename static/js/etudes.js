@@ -25,6 +25,9 @@ function filterEtudes() {
 }
 
 $(document).ready(function() {
+    // Removing all inline style from descriptions
+    $('.etude .description *').attr('style', '');
+
     $('.etude').click(function(e) {
         $('.etude').removeClass('active');
         $etudeDetails = $(this).find('.details');
